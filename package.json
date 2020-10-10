@@ -2,8 +2,8 @@
   "name": "page-reconstruction",
   "version": "0.1.0",
   "private": true,
-  "main": "./src/lib/page-reconstruction.js",
-  "types": "./src/lib/page-reconstruction.d.ts",
+  "main": "./lib-esm/lib/page-reconstruction.js",
+  "types": "./lib-esm/lib/page-reconstruction.d.ts",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",

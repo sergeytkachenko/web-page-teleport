@@ -2,13 +2,17 @@
   "name": "page-reconstruction",
   "version": "0.1.0",
   "private": true,
+  "main": "./src/lib/page-reconstruction.js",
+  "types": "./src/lib/page-reconstruction.d.ts",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "build:lib": "tsc -m commonjs --outDir lib-esm"
   },
   "dependencies": {
     "core-js": "^3.6.5",
+    "jquery": "^3.5.1",
     "vue": "^2.6.11",
     "vue-class-component": "^7.2.3",
     "vue-property-decorator": "^8.4.2",
@@ -16,6 +20,7 @@
     "vuex": "^3.4.0"
   },
   "devDependencies": {
+    "@types/jquery": "^3.5.2",
     "@typescript-eslint/eslint-plugin": "^2.33.0",
     "@typescript-eslint/parser": "^2.33.0",
     "@vue/cli-plugin-babel": "~4.5.0",

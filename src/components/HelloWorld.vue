@@ -52,7 +52,7 @@ import { documentPack, documentUnpack } from "@/lib/page-reconstruction";
 export default class HelloWorld extends Vue {
   @Prop() private msg!: string;
   async enable() {
-    const pack = await documentPack(document);
+    const pack = documentPack();
     await documentUnpack(document.body, pack);
     console.log(pack)
   }

@@ -9,6 +9,6 @@ interface ViewEl {
     box: ElBox;
     zIndex: number;
 }
-export declare function documentPack(document: Document): Promise<ViewEl[]>;
+export declare function documentPack(): ViewEl[];
 export declare function documentUnpack(toElement: Element, elements: ViewEl[]): Promise<void>;
 export {};

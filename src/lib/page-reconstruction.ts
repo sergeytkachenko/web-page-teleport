@@ -11,7 +11,7 @@ interface ViewEl {
 	zIndex: number;
 }
 
-export async function documentPack(document: Document): Promise<ViewEl[]> {
+export function documentPack(): ViewEl[] {
 	const elements: Element[] = Array
 		.from(document.querySelectorAll('body *'))
 		.filter(x => x.tagName.toLowerCase() !== 'script')

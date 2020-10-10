@@ -9,8 +9,6 @@ interface ViewEl {
     box: ElBox;
     zIndex: number;
 }
-export declare class PageReconstruction {
-    packPage(document: Document): Promise<ViewEl[]>;
-    unpackPage(toElement: Element, elements: ViewEl[]): Promise<void>;
-}
+export declare function documentPack(document: Document): Promise<ViewEl[]>;
+export declare function documentUnpack(toElement: Element, elements: ViewEl[]): Promise<void>;
 export {};

@@ -43,8 +43,8 @@
 </template>
 
 <script lang="ts">
-import {Component, Prop, Vue} from 'vue-property-decorator';
-import {PageReconstruction} from "@/lib/page-reconstruction";
+import { Component, Prop, Vue } from 'vue-property-decorator';
+import { documentPack, documentUnpack } from "@/lib/page-reconstruction";
 
 @Component({
 
@@ -52,9 +52,8 @@ import {PageReconstruction} from "@/lib/page-reconstruction";
 export default class HelloWorld extends Vue {
   @Prop() private msg!: string;
   async enable() {
-    const pageReconstruction = new PageReconstruction()
-    const pack = await pageReconstruction.packPage(document);
-    await pageReconstruction.unpackPage(document.body, pack);
+    const pack = await documentPack(document);
+    await documentUnpack(document.body, pack);
     console.log(pack)
   }
 }

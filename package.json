@@ -1,5 +1,5 @@
 {
-  "name": "page-reconstruction",
+  "name": "web-page-teleport",
   "version": "0.1.0",
   "private": true,
   "main": "./lib-esm/lib/page-reconstruction.js",

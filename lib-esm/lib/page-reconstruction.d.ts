@@ -10,5 +10,12 @@ interface ViewEl {
     zIndex: number;
 }
 export declare function documentPack(): ViewEl[];
-export declare function documentUnpack(toElement: HTMLElement, elements: ViewEl[]): Promise<void>;
+interface DocumentInfo {
+    toElement: HTMLElement;
+    viewElements: ViewEl[];
+    screenshotSrc: string;
+    width: number;
+    height: number;
+}
+export declare function documentUnpack(config: DocumentInfo): Promise<void>;
 export {};

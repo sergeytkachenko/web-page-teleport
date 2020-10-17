@@ -39,7 +39,7 @@ async function documentUnpack(config) {
     function draw(ctx, screenshot) {
         ctx.clearRect(0, 0, 1920, 1080);
         ctx.drawImage(screenshot, 0, 0, 1920, 1080);
-        ctx.fillStyle = "rgba(255, 0, 0, 0.05)";
+        ctx.fillStyle = "rgba(255, 0, 255, 0.01)";
         const offset = { x: 0, y: 0, w: 0, h: 0 };
         const rects = config.viewElements.map((x, i) => {
             const top = x.box.y + offset.y;

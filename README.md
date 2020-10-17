@@ -12,7 +12,7 @@ npm run serve
 
 ### Build lib
 ```
-npm run build
+npm run build:lib
 ```
 
 ### Publish in npm 

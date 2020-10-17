@@ -24,6 +24,7 @@ function documentPack() {
 }
 exports.documentPack = documentPack;
 async function documentUnpack(toElement, elements) {
+    toElement.style.position = 'absolute';
     const offset = { x: 0, y: 0, w: 0, h: 0 };
     let css = '';
     elements.forEach((el, index) => {
@@ -33,7 +34,7 @@ async function documentUnpack(toElement, elements) {
         // domEl.innerText = el.tag;
         toElement.appendChild(domEl);
         let localCss = ` #${id} {`;
-        localCss += `position: fixed;`;
+        localCss += `position: relative;`;
         localCss += `top: ${el.box.y + offset.y}px;`;
         localCss += `left: ${el.box.x + offset.x}px;`;
         localCss += `width: ${el.box.width + offset.w}px;`;

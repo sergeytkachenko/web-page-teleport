@@ -33,7 +33,8 @@ export function documentPack(): ViewEl[] {
 	}).filter(x => x.box.height > 0 && x.box.width > 0);
 }
 
-export async function documentUnpack(toElement: Element, elements: ViewEl[]): Promise<void> {
+export async function documentUnpack(toElement: HTMLElement, elements: ViewEl[]): Promise<void> {
+	toElement.style.position = 'absolute';
 	const offset = {x: 0, y : 0, w: 0, h: 0};
 	let css = '';
 	elements.forEach((el, index) => {
@@ -43,7 +44,7 @@ export async function documentUnpack(toElement: Element, elements: ViewEl[]): Pr
 		// domEl.innerText = el.tag;
 		toElement.appendChild(domEl);
 		let localCss = ` #${id} {`
-		localCss += `position: fixed;`
+		localCss += `position: relative;`
 		localCss += `top: ${el.box.y + offset.y}px;`
 		localCss += `left: ${el.box.x + offset.x}px;`
 		localCss += `width: ${el.box.width + offset.w}px;`

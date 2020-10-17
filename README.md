@@ -10,6 +10,11 @@ npm install
 npm run serve
 ```
 
+### Build lib
+```
+npm run build
+```
+
 ### Publish in npm 
 
 ```

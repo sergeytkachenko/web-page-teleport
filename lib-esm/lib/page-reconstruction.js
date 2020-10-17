@@ -27,9 +27,6 @@ async function documentUnpack(config) {
     const canvas = document.createElement('canvas');
     canvas.width = config.width;
     canvas.height = config.height;
-    canvas.style.position = "absolute";
-    canvas.style.top = "0";
-    canvas.style.left = "0";
     config.toElement.innerHTML = '';
     config.toElement.appendChild(canvas);
     const ctx = canvas.getContext("2d");

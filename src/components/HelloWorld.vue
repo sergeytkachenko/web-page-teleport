@@ -52,9 +52,14 @@ import { documentPack, documentUnpack } from "@/lib/page-reconstruction";
 export default class HelloWorld extends Vue {
   @Prop() private msg!: string;
   async enable() {
-    const pack = documentPack();
-    await documentUnpack(document.body, pack);
-    console.log(pack)
+    const viewElements = documentPack();
+    await documentUnpack({
+      screenshotSrc: 'https://storage.elasticdata.io/5d97e3d304d18f0001adf90c/52ac542d-902f-417d-bf06-a33a85cd3fa1.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=elasticdataio%2F20201017%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20201017T152352Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=90e9a72c62ad808062c74a96184ac3f5bbedd5a89a390cf209195579e0e47315',
+      width: 1920,
+      height: 1080,
+      toElement: document.body,
+      viewElements: viewElements,
+    });
   }
 }
 </script>

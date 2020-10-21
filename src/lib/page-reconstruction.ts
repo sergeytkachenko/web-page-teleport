@@ -28,7 +28,7 @@ export interface TeleportCanvasEvent {
 	fakeId?: string;
 	originEvent: MouseEvent;
 }
-type Handler = (e: TeleportCanvasEvent) => {};
+type Handler = (e: TeleportCanvasEvent) => void;
 export class CanvasEvents {
 	public readonly leftClickFns: Handler[] = [];
 	public readonly rightClickFns: Handler[] = [];

@@ -3,7 +3,7 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 
-export * from './lib/page-reconstruction'
+export * from './lib'
 
 Vue.config.productionTip = false
 

@@ -5,7 +5,7 @@ const vue_1 = tslib_1.__importDefault(require("vue"));
 const App_vue_1 = tslib_1.__importDefault(require("./App.vue"));
 const router_1 = tslib_1.__importDefault(require("./router"));
 const store_1 = tslib_1.__importDefault(require("./store"));
-tslib_1.__exportStar(require("./lib/page-reconstruction"), exports);
+tslib_1.__exportStar(require("./lib"), exports);
 vue_1.default.config.productionTip = false;
 new vue_1.default({
     router: router_1.default,

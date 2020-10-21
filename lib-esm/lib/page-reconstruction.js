@@ -1,7 +1,15 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.documentUnpack = exports.CanvasEvents = exports.documentPack = void 0;
-const string_utils_1 = require("@/lib/string.utils");
+function makeId(length = 14) {
+    let result = '';
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const charactersLength = characters.length;
+    for (let i = 0; i < length; i++) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result.toLowerCase();
+}
 function documentPack() {
     const elements = Array
         .from(document.querySelectorAll('body *'))
@@ -11,7 +19,7 @@ function documentPack() {
     return elements.map(el => {
         const box = el.getBoundingClientRect();
         const styles = getComputedStyle(el);
-        const fakeId = string_utils_1.makeId();
+        const fakeId = makeId();
         el.setAttribute('fake-id', fakeId);
         return {
             tag: el.tagName.toLowerCase(),

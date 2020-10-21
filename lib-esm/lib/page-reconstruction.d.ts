@@ -18,11 +18,11 @@ interface DocumentInfo {
     width: number;
     height: number;
 }
-interface CanvasClickEvent {
+export interface TeleportCanvasEvent {
     fakeId?: string;
     originEvent: MouseEvent;
 }
-declare type Handler = (e: CanvasClickEvent) => {};
+declare type Handler = (e: TeleportCanvasEvent) => {};
 export declare class CanvasEvents {
     readonly leftClickFns: Handler[];
     readonly rightClickFns: Handler[];

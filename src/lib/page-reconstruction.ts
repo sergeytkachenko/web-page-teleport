@@ -1,27 +1,15 @@
-function makeId(length= 14) {
-	let result = '';
-	const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-	const charactersLength = characters.length;
-	for (let i = 0; i < length; i++) {
-		result += characters.charAt(Math.floor(Math.random() * charactersLength));
-	}
-	return result.toLowerCase();
-}
-
 interface ElBox {
 	x: number;
 	y: number;
 	width: number;
 	height: number;
 }
-
 interface ViewEl {
 	tag: string;
 	box: ElBox;
 	zIndex: number;
 	fakeId: string;
 }
-
 interface Rect {
 	x: number;
 	y: number;
@@ -29,8 +17,75 @@ interface Rect {
 	h: number;
 	z: number;
 }
+interface DocumentInfo {
+	toElement: HTMLElement;
+	viewElements: ViewEl[];
+	screenshotSrc: string;
+	width: number;
+	height: number;
+}
+export interface TeleportCanvasEvent {
+	fakeId?: string;
+	originEvent: MouseEvent;
+}
+type Handler = (e: TeleportCanvasEvent) => {};
+export class CanvasEvents {
+	public readonly leftClickFns: Handler[] = [];
+	public readonly rightClickFns: Handler[] = [];
+
+	onLeftClick(fn: Handler): CanvasEvents {
+		this.leftClickFns.push(fn);
+		return this;
+	}
+
+	onRightClick(fn: Handler): CanvasEvents {
+		this.rightClickFns.push(fn);
+		return this;
+	}
+}
+
+function draw(ctx: any, screenshot: any, viewElements: ViewEl[]): Rect[] {
+	ctx.clearRect(0, 0, 1920, 1080);
+	ctx.drawImage(screenshot, 0, 0, 1920, 1080);
+	ctx.fillStyle = "rgba(255, 0, 255, 0.01)";
+	const offset = {x: 0, y : 0, w: 0, h: 0};
+	const rects = viewElements.map((x, i) => {
+		const top = x.box.y + offset.y;
+		const left = x.box.x + offset.x;
+		const width = x.box.width + offset.w;
+		const height = x.box.height + offset.h;
+		return  {x: left, y: top, w: width, h: height, z: i}
+	}).sort(x => x.z).reverse();
+	rects.forEach((x) => {
+		ctx.fillRect(x.x, x.y, x.w, x.h);
+	});
+	return rects;
+}
+function findRect(rects: Rect[], ctx: any, e: MouseEvent): Rect | undefined {
+	return rects.find(x => {
+		ctx.beginPath();
+		ctx.rect(x.x, x.y, x.w, x.h);
+		return ctx.isPointInPath(e.offsetX, e.offsetY);
+	});
+}
+function findViewElement(rects: Rect[], ctx: any, e: MouseEvent, viewElements: ViewEl[]): ViewEl | undefined {
+	const found = findRect(rects, ctx, e);
+	return viewElements.find(x => {
+		const box = x.box;
+		return box.x === found?.x && box.y === found.y && box.width === found.w && box.height === found.h;
+	});
+}
 
 export function documentPack(): ViewEl[] {
+	function makeId(length= 14) {
+		let result = '';
+		const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+		const charactersLength = characters.length;
+		for (let i = 0; i < length; i++) {
+			result += characters.charAt(Math.floor(Math.random() * charactersLength));
+		}
+		return result.toLowerCase();
+	}
 	const elements: Element[] = Array
 		.from(document.querySelectorAll('body *'))
 		.filter(x => x.tagName.toLowerCase() !== 'script')
@@ -54,70 +109,6 @@ export function documentPack(): ViewEl[] {
 		} as ViewEl;
 	}).filter(x => x.box.height > 0 && x.box.width > 0);
 }
-
-function draw(ctx: any, screenshot: any, viewElements: ViewEl[]): Rect[] {
-	ctx.clearRect(0, 0, 1920, 1080);
-	ctx.drawImage(screenshot, 0, 0, 1920, 1080);
-	ctx.fillStyle = "rgba(255, 0, 255, 0.01)";
-	const offset = {x: 0, y : 0, w: 0, h: 0};
-	const rects = viewElements.map((x, i) => {
-		const top = x.box.y + offset.y;
-		const left = x.box.x + offset.x;
-		const width = x.box.width + offset.w;
-		const height = x.box.height + offset.h;
-		return  {x: left, y: top, w: width, h: height, z: i}
-	}).sort(x => x.z).reverse();
-	rects.forEach((x) => {
-		ctx.fillRect(x.x, x.y, x.w, x.h);
-	});
-	return rects;
-}
-
-function findRect(rects: Rect[], ctx: any, e: MouseEvent): Rect | undefined {
-	return rects.find(x => {
-		ctx.beginPath();
-		ctx.rect(x.x, x.y, x.w, x.h);
-		return ctx.isPointInPath(e.offsetX, e.offsetY);
-	});
-}
-function findViewElement(rects: Rect[], ctx: any, e: MouseEvent, viewElements: ViewEl[]): ViewEl | undefined {
-	const found = findRect(rects, ctx, e);
-	return viewElements.find(x => {
-		const box = x.box;
-		return box.x === found?.x && box.y === found.y && box.width === found.w && box.height === found.h;
-	});
-}
-
-interface DocumentInfo {
-	toElement: HTMLElement;
-	viewElements: ViewEl[];
-	screenshotSrc: string;
-	width: number;
-	height: number;
-}
-
-export interface TeleportCanvasEvent {
-	fakeId?: string;
-	originEvent: MouseEvent;
-}
-
-type Handler = (e: TeleportCanvasEvent) => {};
-
-export class CanvasEvents {
-	public readonly leftClickFns: Handler[] = [];
-	public readonly rightClickFns: Handler[] = [];
-
-	onLeftClick(fn: Handler): CanvasEvents {
-		this.leftClickFns.push(fn);
-		return this;
-	}
-
-	onRightClick(fn: Handler): CanvasEvents {
-		this.rightClickFns.push(fn);
-		return this;
-	}
-}
-
 export async function documentUnpack(config: DocumentInfo): Promise<CanvasEvents> {
 	const canvasEvents = new CanvasEvents();
 	const canvas = document.createElement('canvas');

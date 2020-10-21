@@ -1,40 +1,21 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.documentUnpack = exports.CanvasEvents = exports.documentPack = void 0;
-function makeId(length = 14) {
-    let result = '';
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    const charactersLength = characters.length;
-    for (let i = 0; i < length; i++) {
-        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+exports.documentUnpack = exports.documentPack = exports.CanvasEvents = void 0;
+class CanvasEvents {
+    constructor() {
+        this.leftClickFns = [];
+        this.rightClickFns = [];
     }
-    return result.toLowerCase();
+    onLeftClick(fn) {
+        this.leftClickFns.push(fn);
+        return this;
+    }
+    onRightClick(fn) {
+        this.rightClickFns.push(fn);
+        return this;
+    }
 }
-function documentPack() {
-    const elements = Array
-        .from(document.querySelectorAll('body *'))
-        .filter(x => x.tagName.toLowerCase() !== 'script')
-        .filter(x => x.tagName.toLowerCase() !== 'code')
-        .filter(x => x.tagName.toLowerCase() !== 'noscript');
-    return elements.map(el => {
-        const box = el.getBoundingClientRect();
-        const styles = getComputedStyle(el);
-        const fakeId = makeId();
-        el.setAttribute('fake-id', fakeId);
-        return {
-            tag: el.tagName.toLowerCase(),
-            box: {
-                x: box.x,
-                y: box.y,
-                width: box.width,
-                height: box.height,
-            },
-            zIndex: isNaN(parseInt(styles.zIndex)) ? 0 : parseInt(styles.zIndex),
-            fakeId: fakeId,
-        };
-    }).filter(x => x.box.height > 0 && x.box.width > 0);
-}
-exports.documentPack = documentPack;
+exports.CanvasEvents = CanvasEvents;
 function draw(ctx, screenshot, viewElements) {
     ctx.clearRect(0, 0, 1920, 1080);
     ctx.drawImage(screenshot, 0, 0, 1920, 1080);
@@ -66,21 +47,40 @@ function findViewElement(rects, ctx, e, viewElements) {
         return box.x === found?.x && box.y === found.y && box.width === found.w && box.height === found.h;
     });
 }
-class CanvasEvents {
-    constructor() {
-        this.leftClickFns = [];
-        this.rightClickFns = [];
+function documentPack() {
+    function makeId(length = 14) {
+        let result = '';
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        const charactersLength = characters.length;
+        for (let i = 0; i < length; i++) {
+            result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        }
+        return result.toLowerCase();
     }
-    onLeftClick(fn) {
-        this.leftClickFns.push(fn);
-        return this;
-    }
-    onRightClick(fn) {
-        this.rightClickFns.push(fn);
-        return this;
-    }
+    const elements = Array
+        .from(document.querySelectorAll('body *'))
+        .filter(x => x.tagName.toLowerCase() !== 'script')
+        .filter(x => x.tagName.toLowerCase() !== 'code')
+        .filter(x => x.tagName.toLowerCase() !== 'noscript');
+    return elements.map(el => {
+        const box = el.getBoundingClientRect();
+        const styles = getComputedStyle(el);
+        const fakeId = makeId();
+        el.setAttribute('fake-id', fakeId);
+        return {
+            tag: el.tagName.toLowerCase(),
+            box: {
+                x: box.x,
+                y: box.y,
+                width: box.width,
+                height: box.height,
+            },
+            zIndex: isNaN(parseInt(styles.zIndex)) ? 0 : parseInt(styles.zIndex),
+            fakeId: fakeId,
+        };
+    }).filter(x => x.box.height > 0 && x.box.width > 0);
 }
-exports.CanvasEvents = CanvasEvents;
+exports.documentPack = documentPack;
 async function documentUnpack(config) {
     const canvasEvents = new CanvasEvents();
     const canvas = document.createElement('canvas');

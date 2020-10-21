@@ -10,7 +10,6 @@ interface ViewEl {
     zIndex: number;
     fakeId: string;
 }
-export declare function documentPack(): ViewEl[];
 interface DocumentInfo {
     toElement: HTMLElement;
     viewElements: ViewEl[];
@@ -29,5 +28,6 @@ export declare class CanvasEvents {
     onLeftClick(fn: Handler): CanvasEvents;
     onRightClick(fn: Handler): CanvasEvents;
 }
+export declare function documentPack(): ViewEl[];
 export declare function documentUnpack(config: DocumentInfo): Promise<CanvasEvents>;
 export {};

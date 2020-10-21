@@ -111,17 +111,17 @@ async function documentUnpack(config) {
             ctx.fill();
         };
         canvas.addEventListener('click', (e) => {
-            const foundViewElement = findViewElement(rects, ctx, e, config.viewElements);
+            const foundViewElement = findViewElement(rects, ctx, e, config.viewElements) || {};
             canvasEvents.leftClickFns.forEach(fn => fn({
                 originEvent: e,
-                fakeId: foundViewElement?.fakeId,
+                fakeId: foundViewElement.fakeId,
             }));
         });
         canvas.addEventListener('contextmenu', (e) => {
-            const foundViewElement = findViewElement(rects, ctx, e, config.viewElements);
+            const foundViewElement = findViewElement(rects, ctx, e, config.viewElements) || {};
             canvasEvents.rightClickFns.forEach(fn => fn({
                 originEvent: e,
-                fakeId: foundViewElement?.fakeId,
+                fakeId: foundViewElement.fakeId,
             }));
         });
     };

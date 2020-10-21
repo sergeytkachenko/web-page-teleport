@@ -69,10 +69,13 @@ function findRect(rects: Rect[], ctx: any, e: MouseEvent): Rect | undefined {
 	});
 }
 function findViewElement(rects: Rect[], ctx: any, e: MouseEvent, viewElements: ViewEl[]): ViewEl | undefined {
-	const found = findRect(rects, ctx, e);
-	return viewElements.find(x => {
+	const f = findRect(rects, ctx, e) || {} as any;
+	return viewElements.find((x: ViewEl) => {
 		const box = x.box;
-		return box.x === found?.x && box.y === found.y && box.width === found.w && box.height === found.h;
+		return box.x === f.x
+			&& box.y === f.y
+			&& box.width === f.w
+			&& box.height === f.h;
 	});
 }
 

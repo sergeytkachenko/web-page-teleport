@@ -41,10 +41,13 @@ function findRect(rects, ctx, e) {
     });
 }
 function findViewElement(rects, ctx, e, viewElements) {
-    const found = findRect(rects, ctx, e);
-    return viewElements.find(x => {
+    const f = findRect(rects, ctx, e) || {};
+    return viewElements.find((x) => {
         const box = x.box;
-        return box.x === found?.x && box.y === found.y && box.width === found.w && box.height === found.h;
+        return box.x === f.x
+            && box.y === f.y
+            && box.width === f.w
+            && box.height === f.h;
     });
 }
 function documentPack() {

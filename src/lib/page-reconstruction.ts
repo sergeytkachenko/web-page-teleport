@@ -1,3 +1,5 @@
+import {makeId} from "@/lib/string.utils";
+
 interface ElBox {
 	x: number;
 	y: number;
@@ -9,6 +11,15 @@ interface ViewEl {
 	tag: string;
 	box: ElBox;
 	zIndex: number;
+	fakeId: string;
+}
+
+interface Rect {
+	x: number;
+	y: number;
+	w: number;
+	h: number;
+	z: number;
 }
 
 export function documentPack(): ViewEl[] {
@@ -20,6 +31,8 @@ export function documentPack(): ViewEl[] {
 	return elements.map(el => {
 		const box = el.getBoundingClientRect();
 		const styles = getComputedStyle(el);
+		const fakeId = makeId();
+		el.setAttribute('fake-id',fakeId);
 		return {
 			tag: el.tagName.toLowerCase(),
 			box: {
@@ -29,8 +42,42 @@ export function documentPack(): ViewEl[] {
 				height: box.height,
 			},
 			zIndex: isNaN(parseInt(styles.zIndex)) ? 0 : parseInt(styles.zIndex),
+			fakeId: fakeId,
 		} as ViewEl;
 	}).filter(x => x.box.height > 0 && x.box.width > 0);
+}
+
+function draw(ctx: any, screenshot: any, viewElements: ViewEl[]): Rect[] {
+	ctx.clearRect(0, 0, 1920, 1080);
+	ctx.drawImage(screenshot, 0, 0, 1920, 1080);
+	ctx.fillStyle = "rgba(255, 0, 255, 0.01)";
+	const offset = {x: 0, y : 0, w: 0, h: 0};
+	const rects = viewElements.map((x, i) => {
+		const top = x.box.y + offset.y;
+		const left = x.box.x + offset.x;
+		const width = x.box.width + offset.w;
+		const height = x.box.height + offset.h;
+		return  {x: left, y: top, w: width, h: height, z: i}
+	}).sort(x => x.z).reverse();
+	rects.forEach((x) => {
+		ctx.fillRect(x.x, x.y, x.w, x.h);
+	});
+	return rects;
+}
+
+function findRect(rects: Rect[], ctx: any, e: MouseEvent): Rect | undefined {
+	return rects.find(x => {
+		ctx.beginPath();
+		ctx.rect(x.x, x.y, x.w, x.h);
+		return ctx.isPointInPath(e.offsetX, e.offsetY);
+	});
+}
+function findViewElement(rects: Rect[], ctx: any, e: MouseEvent, viewElements: ViewEl[]): ViewEl | undefined {
+	const found = findRect(rects, ctx, e);
+	return viewElements.find(x => {
+		const box = x.box;
+		return box.x === found?.x && box.y === found.y && box.width === found.w && box.height === found.h;
+	});
 }
 
 interface DocumentInfo {
@@ -41,7 +88,30 @@ interface DocumentInfo {
 	height: number;
 }
 
-export async function documentUnpack(config: DocumentInfo): Promise<void> {
+interface CanvasClickEvent {
+	fakeId?: string;
+	originEvent: MouseEvent;
+}
+
+type Handler = (e: CanvasClickEvent) => {};
+
+export class CanvasEvents {
+	public readonly leftClickFns: Handler[] = [];
+	public readonly rightClickFns: Handler[] = [];
+
+	onLeftClick(fn: Handler): CanvasEvents {
+		this.leftClickFns.push(fn);
+		return this;
+	}
+
+	onRightClick(fn: Handler): CanvasEvents {
+		this.rightClickFns.push(fn);
+		return this;
+	}
+}
+
+export async function documentUnpack(config: DocumentInfo): Promise<CanvasEvents> {
+	const canvasEvents = new CanvasEvents();
 	const canvas = document.createElement('canvas');
 	canvas.width = config.width;
 	canvas.height = config.height;
@@ -49,43 +119,38 @@ export async function documentUnpack(config: DocumentInfo): Promise<void> {
 	config.toElement.appendChild(canvas);
 	const ctx = canvas.getContext("2d");
 	if (!ctx) {
-		return;
-	}
-	function draw(ctx: any, screenshot: any) {
-		ctx.clearRect(0, 0, 1920, 1080);
-		ctx.drawImage(screenshot, 0, 0, 1920, 1080);
-		ctx.fillStyle = "rgba(255, 0, 255, 0.01)";
-		const offset = {x: 0, y : 0, w: 0, h: 0};
-		const rects = config.viewElements.map((x, i) => {
-			const top = x.box.y + offset.y;
-			const left = x.box.x + offset.x;
-			const width = x.box.width + offset.w;
-			const height = x.box.height + offset.h;
-			return  {x: left, y: top, w: width, h: height, z: i}
-		}).sort(x => x.z).reverse();
-		rects.forEach((x) => {
-			ctx.fillRect(x.x, x.y, x.w, x.h);
-		});
-		return rects;
+		return canvasEvents;
 	}
 	const screenshot = new Image();
 	screenshot.onload = function () {
-		draw(ctx, screenshot);
+		draw(ctx, screenshot, config.viewElements);
+		let rects: Rect[];
 		canvas.onmousemove = function(e) {
-			const rects = draw(ctx, screenshot);
-			const find = rects.find(x => {
-				ctx.beginPath();
-				ctx.rect(x.x, x.y, x.w, x.h);
-				return ctx.isPointInPath(e.offsetX, e.offsetY)
-			});
-			if (!find) {
+			rects = draw(ctx, screenshot, config.viewElements);
+			const found = findRect(rects, ctx, e);
+			if (!found) {
 				return;
 			}
 			ctx.beginPath();
-			ctx.rect(find.x, find.y, find.w, find.h);
+			ctx.rect(found.x, found.y, found.w, found.h);
 			ctx.fillStyle = "rgba(0, 255, 255, 0.2)";
 			ctx.fill();
 		};
+		canvas.addEventListener('click', (e: MouseEvent) => {
+			const foundViewElement = findViewElement(rects, ctx, e, config.viewElements);
+			canvasEvents.leftClickFns.forEach(fn => fn({
+				originEvent: e,
+				fakeId: foundViewElement?.fakeId,
+			}));
+		});
+		canvas.addEventListener('contextmenu', (e: MouseEvent) => {
+			const foundViewElement = findViewElement(rects, ctx, e, config.viewElements);
+			canvasEvents.rightClickFns.forEach(fn => fn({
+				originEvent: e,
+				fakeId: foundViewElement?.fakeId,
+			}));
+		});
 	};
 	screenshot.src = config.screenshotSrc;
+	return canvasEvents;
 }

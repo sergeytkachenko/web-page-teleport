@@ -8,6 +8,7 @@ interface ViewEl {
     tag: string;
     box: ElBox;
     zIndex: number;
+    fakeId: string;
 }
 export declare function documentPack(): ViewEl[];
 interface DocumentInfo {
@@ -17,5 +18,16 @@ interface DocumentInfo {
     width: number;
     height: number;
 }
-export declare function documentUnpack(config: DocumentInfo): Promise<void>;
+interface CanvasClickEvent {
+    fakeId?: string;
+    originEvent: MouseEvent;
+}
+declare type Handler = (e: CanvasClickEvent) => {};
+export declare class CanvasEvents {
+    readonly leftClickFns: Handler[];
+    readonly rightClickFns: Handler[];
+    onLeftClick(fn: Handler): CanvasEvents;
+    onRightClick(fn: Handler): CanvasEvents;
+}
+export declare function documentUnpack(config: DocumentInfo): Promise<CanvasEvents>;
 export {};

@@ -88,12 +88,12 @@ interface DocumentInfo {
 	height: number;
 }
 
-interface CanvasClickEvent {
+export interface TeleportCanvasEvent {
 	fakeId?: string;
 	originEvent: MouseEvent;
 }
 
-type Handler = (e: CanvasClickEvent) => {};
+type Handler = (e: TeleportCanvasEvent) => {};
 
 export class CanvasEvents {
 	public readonly leftClickFns: Handler[] = [];

@@ -28,6 +28,8 @@ interface DocumentInfo {
 export interface TeleportCanvasEvent {
 	fakeId?: string;
 	originEvent: MouseEvent;
+	x: number;
+	y: number;
 }
 type Handler = (e: TeleportCanvasEvent) => void;
 export class CanvasEvents {
@@ -167,6 +169,8 @@ export async function documentUnpack(config: DocumentInfo): Promise<CanvasEvents
 			canvasEvents.leftClickFns.forEach(fn => fn({
 				originEvent: e,
 				fakeId: foundViewElement.fakeId,
+				x: e.clientX,
+				y: e.clientY,
 			}));
 		});
 		canvas.addEventListener('contextmenu', (e: MouseEvent) => {
@@ -174,6 +178,8 @@ export async function documentUnpack(config: DocumentInfo): Promise<CanvasEvents
 			canvasEvents.rightClickFns.forEach(fn => fn({
 				originEvent: e,
 				fakeId: foundViewElement.fakeId,
+				x: e.clientX,
+				y: e.clientY,
 			}));
 		});
 	};

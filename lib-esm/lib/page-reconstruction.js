@@ -51,6 +51,22 @@ function findViewElement(rects, ctx, e, viewElements) {
     });
 }
 function documentPack() {
+    function isVisible(el) {
+        const isHidden = el.style.visibility === 'hidden'
+            || el.style.display === 'none'
+            || el.style.opacity === '0';
+        return isHidden === false;
+    }
+    function getElements(node) {
+        const elements = Array.from(node.childNodes)
+            .filter(x => x.nodeType === 1) // ELEMENT_NODE
+            .filter(x => isVisible(x));
+        let children = [];
+        elements.forEach(el => {
+            children = children.concat(getElements(el));
+        });
+        return elements.concat(children);
+    }
     function makeId(length = 14) {
         let result = '';
         const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -60,8 +76,7 @@ function documentPack() {
         }
         return result.toLowerCase();
     }
-    const elements = Array
-        .from(document.querySelectorAll('body *'))
+    const elements = getElements(document.body)
         .filter(x => x.tagName.toLowerCase() !== 'script')
         .filter(x => x.tagName.toLowerCase() !== 'code')
         .filter(x => x.tagName.toLowerCase() !== 'noscript');
@@ -72,6 +87,7 @@ function documentPack() {
         el.setAttribute('fake-id', fakeId);
         return {
             tag: el.tagName.toLowerCase(),
+            style: el.getAttribute('style'),
             box: {
                 x: box.x,
                 y: box.y,
@@ -102,6 +118,7 @@ async function documentUnpack(config) {
         canvas.onmousemove = function (e) {
             rects = draw(ctx, screenshot, config.viewElements);
             const found = findRect(rects, ctx, e);
+            console.log('findRect', found);
             if (!found) {
                 return;
             }

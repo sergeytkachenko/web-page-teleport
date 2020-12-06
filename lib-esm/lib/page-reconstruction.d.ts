@@ -6,6 +6,7 @@ interface ElBox {
 }
 interface ViewEl {
     tag: string;
+    style: string;
     box: ElBox;
     zIndex: number;
     fakeId: string;

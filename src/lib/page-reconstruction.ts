@@ -81,7 +81,10 @@ function findViewElement(rects: Rect[], ctx: any, e: MouseEvent, viewElements: V
 
 export function documentPack(): ViewEl[] {
 	function isVisible(el: HTMLElement) {
-		return el.style.visibility !== 'hidden' && el.style.display !== 'none' && el.style.opacity !== '0';
+		const isHidden = el.style.visibility === 'hidden'
+			|| el.style.display === 'none'
+			|| el.style.opacity === '0';
+		return  isHidden === false;
 	}
 	function getElements(node: HTMLElement): HTMLElement[] {
 		const elements = Array.from(node.childNodes)
@@ -143,6 +146,7 @@ export async function documentUnpack(config: DocumentInfo): Promise<CanvasEvents
 		canvas.onmousemove = function(e) {
 			rects = draw(ctx, screenshot, config.viewElements);
 			const found = findRect(rects, ctx, e);
+			console.log('findRect', found);
 			if (!found) {
 				return;
 			}

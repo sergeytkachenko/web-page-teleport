@@ -1,6 +1,8 @@
 <template>
   <div class="hello">
-    <h1>{{ msg }}</h1>
+    <h1 style="visibility: hidden;">
+		<span>{{ msg }}</span>
+	</h1>
     <div>
       <a href="javascript:void(0)" @click="enable">enable interactive mode</a>
     </div>

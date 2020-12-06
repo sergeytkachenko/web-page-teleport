@@ -6,6 +6,7 @@ interface ElBox {
 }
 interface ViewEl {
 	tag: string;
+	style: string;
 	box: ElBox;
 	zIndex: number;
 	fakeId: string;
@@ -109,7 +110,6 @@ export function documentPack(): ViewEl[] {
 		.filter(x => x.tagName.toLowerCase() !== 'script')
 		.filter(x => x.tagName.toLowerCase() !== 'code')
 		.filter(x => x.tagName.toLowerCase() !== 'noscript');
-	debugger
 	return elements.map(el => {
 		const box = el.getBoundingClientRect();
 		const styles = getComputedStyle(el);
@@ -117,6 +117,7 @@ export function documentPack(): ViewEl[] {
 		el.setAttribute('fake-id',fakeId);
 		return {
 			tag: el.tagName.toLowerCase(),
+			style: el.getAttribute('style'),
 			box: {
 				x: box.x,
 				y: box.y,

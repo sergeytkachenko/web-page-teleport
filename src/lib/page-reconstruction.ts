@@ -80,6 +80,19 @@ function findViewElement(rects: Rect[], ctx: any, e: MouseEvent, viewElements: V
 }
 
 export function documentPack(): ViewEl[] {
+	function isVisible(el: HTMLElement) {
+		return el.style.visibility !== 'hidden' && el.style.display !== 'none' && el.style.opacity !== '0';
+	}
+	function getElements(node: HTMLElement): HTMLElement[] {
+		const elements = Array.from(node.childNodes)
+			.filter(x => x.nodeType === 1) // ELEMENT_NODE
+			.filter(x => isVisible(x as HTMLElement)) as HTMLElement[];
+		let children: HTMLElement[] = [];
+		elements.forEach(el => {
+			children = children.concat(getElements(el));
+		});
+		return elements.concat(children);
+	}
 	function makeId(length= 14) {
 		let result = '';
 		const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -89,11 +102,11 @@ export function documentPack(): ViewEl[] {
 		}
 		return result.toLowerCase();
 	}
-	const elements: Element[] = Array
-		.from(document.querySelectorAll('body *'))
+	const elements: HTMLElement[] = getElements(document.body)
 		.filter(x => x.tagName.toLowerCase() !== 'script')
 		.filter(x => x.tagName.toLowerCase() !== 'code')
 		.filter(x => x.tagName.toLowerCase() !== 'noscript');
+	debugger
 	return elements.map(el => {
 		const box = el.getBoundingClientRect();
 		const styles = getComputedStyle(el);

@@ -8,8 +8,7 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "build:lib": "tsc -m commonjs --outDir lib-esm",
-    "publish": "npm version patch -m 'patch comment' && npm publish"
+    "build:lib": "tsc -m commonjs --outDir lib-esm"
   },
   "dependencies": {
     "core-js": "^3.6.5",
@@ -41,7 +40,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run build"
+      "pre-commit": "npm run build:lib"
     }
   }
 }

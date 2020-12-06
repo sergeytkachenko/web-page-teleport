@@ -88,6 +88,13 @@ export function documentPack(): ViewEl[] {
 		return  isHidden === false;
 	}
 	function getElements(node: HTMLElement): HTMLElement[] {
+		if (node.tagName === 'IFRAME') {
+			const iframe = node as HTMLIFrameElement;
+			if (!iframe.contentWindow) {
+				return [];
+			}
+			node = iframe.contentWindow.document.body;
+		}
 		const elements = Array.from(node.childNodes)
 			.filter(x => x.nodeType === 1) // ELEMENT_NODE
 			.filter(x => isVisible(x as HTMLElement)) as HTMLElement[];
@@ -114,10 +121,9 @@ export function documentPack(): ViewEl[] {
 		const box = el.getBoundingClientRect();
 		const styles = getComputedStyle(el);
 		const fakeId = makeId();
-		el.setAttribute('fake-id',fakeId);
+		el.setAttribute('fake-id', fakeId);
 		return {
 			tag: el.tagName.toLowerCase(),
-			style: el.getAttribute('style'),
 			box: {
 				x: box.x,
 				y: box.y,

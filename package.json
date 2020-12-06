@@ -1,6 +1,6 @@
 {
   "name": "web-page-teleport",
-  "version": "1.0.14",
+  "version": "1.0.15",
   "private": false,
   "main": "./lib-esm/lib/page-reconstruction.js",
   "types": "./lib-esm/lib/page-reconstruction.d.ts",
